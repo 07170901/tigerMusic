@@ -38,7 +38,7 @@
                // console.log('b==>',b.title)
                return a.id - b.id
              })
-            }, 500);
+            }, 3000);
     },
     methods: {
       // 传递id

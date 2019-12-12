@@ -23,6 +23,10 @@
     },
     methods:{
       _getsinger(songsId) {
+        if(!songsId){
+          this.$router.push('/singer')
+          return
+        }
         axios({
           url:'http://www.arthurdon.top:3000/artists?id='+songsId,
           method:'GET'

@@ -1,10 +1,10 @@
 <template>
-  <div class="recommend" ref='recommend'>
+  <div class="recommend" ref='recommend'  v-if='reRender'>
     <!-- 传入 歌曲列表数据-->
-    <scroll class="recommend-content" ref='scroll' :data='discList'>
+    <scroll class="recommend-content"  ref='scroll' :probeType='probeType' :data='discList'>
       <!-- 注意：要div包裹要滚动的数据 -->
       <div>
-      <div v-if="recommend.length" class="slide-wrapper">
+      <div v-if="recommend&&recommend.length" class="slide-wrapper">
         <slider>
           <div v-for="(item,index) in recommend" :key='index'>
             <a :href="item.url">
@@ -47,18 +47,28 @@
     data() {
       return {
         recommend: [],
-        discList:[]
+        discList:[],
+        reRender: false
       }
     },
+    // 解决vue中使用swiper的loop循环失效和路由跳转回来后自动轮播失效需要手动滑动才能重新开始轮播
+    activated() {
+      this.reRender = false;
+      setTimeout(()=>{
+         this.reRender = true;
+      },100)
+    },
     created() {
+       this.probeType = 3
       this._getRecommend()
       setTimeout(()=>{
          this._getDisList()
       },1000)
-     
+
 
     },
     methods: {
+
       _getRecommend() {
         getRecommend().then((res) => {
           this.recommend = res.bigPics

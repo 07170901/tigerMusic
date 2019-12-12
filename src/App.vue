@@ -45,4 +45,9 @@
   .fr{
     float: right;
   }
+  .one-wrap{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 </style>
