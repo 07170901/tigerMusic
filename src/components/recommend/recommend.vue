@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend" ref='recommend'  v-if='reRender'>
+  <div class="recommend" v-if="reRender" ref='recommends' >
     <!-- 传入 歌曲列表数据-->
     <scroll class="recommend-content"  ref='scroll' :probeType='probeType' :data='discList'>
       <!-- 注意：要div包裹要滚动的数据 -->
@@ -8,15 +8,15 @@
         <slider>
           <div v-for="(item,index) in recommend" :key='index'>
             <a :href="item.url">
-              <img class="needsclick" @load="loadImg" :src="item.image" alt="">
+              <img class="needsclick" @load="loadImg" :src="item.imageUrl" alt="">
             </a>
           </div>
         </slider>
       </div>
-      <div class="recommend-list">
+      <div class="recommend-list" ref='recommendList'>
         <h1 class="list-title">热门歌单推荐</h1>
         <ul>
-          <li v-for="(item,index) in discList" :key='index' class="item">
+          <li v-for="(item,index) in discList" :key='index' class="item" @click='selectItem(item.id)'>
               <div class="icon">
                 <!-- v-lazy 懒加载 -->
                 <img width="60" height="60" v-lazy="item.picUrl" alt="">
@@ -33,7 +33,11 @@
         <loading></loading>
       </div>
     </scroll>
+    <transition name="fade">
+     <router-view></router-view>
+       </transition>
   </div>
+
 
 </template>
 
@@ -42,8 +46,10 @@
   import Slider from '../../base/slider/slider.vue'
   import Loading from '../../base/loading/loading.vue'
   import {getRecommend} from '../../api/recommend.js'
+  import {playlistMixin} from '../../common/js/mixin.js'
   import axios from 'axios'
   export default {
+    mixins:[playlistMixin],
     data() {
       return {
         recommend: [],
@@ -60,20 +66,41 @@
     },
     created() {
        this.probeType = 3
-      this._getRecommend()
+       this._getRecommend()
       setTimeout(()=>{
          this._getDisList()
       },1000)
-
-
     },
     methods: {
+     handlePlaylist(discList){
+      setTimeout(()=>{
+       const bottom = discList.length>0 ?'50px':''
+       this.$refs.recommends.style.bottom = bottom
+      // console.log(this.$refs.recommends)
+       this.$refs.scroll.refresh()
+        },1000)
 
+     },
+      selectItem(songId){
+        this.$router.push({path:`/recommend/${songId}`})
+      },
       _getRecommend() {
-        getRecommend().then((res) => {
-          this.recommend = res.bigPics
-          console.log(res.bigPics)
+        axios({
+          url: 'http://www.arthurdon.top:3000/banner',
+          method: 'get',
         })
+        .then(response => {
+          this.recommend=response.data.banners
+
+           //console.log(this.discList)  //可以获取
+        })
+        .catch((error) => {
+          //console.log('歌单列表获取错误(可能网络出错)')
+        })
+        // getRecommend().then((res) => {
+        //   this.recommend = res.bigPics
+        //  // console.log(res.bigPics)
+        // })
       },
       // 获取歌曲列表
      _getDisList(){
@@ -82,11 +109,12 @@
           method: 'get',
         })
         .then(response => {
+
           this.discList=response.data.result
-          // console.log(this.discList)  可以获取
+           //console.log(this.discList)  //可以获取
         })
         .catch((error) => {
-          console.log('歌单列表获取错误(可能网络出错)')
+          //console.log('歌单列表获取错误(可能网络出错)')
         })
      },
      // 处理图片改变时，列表显示不完整
@@ -129,8 +157,8 @@
           padding: 0;
         }
         .list-title {
-          height: 65px;
-          line-height: 65px;
+          height: 50px;
+          line-height: 60px;
           text-align: center;
           font-size: @font-size-medium;
           color: @color-theme;
@@ -139,7 +167,7 @@
           display: flex;
           box-sizing: border-box;
           align-items: center;
-          padding: 0 20px 20px 20px;
+          padding: 10px 20px;
            .icon{
           flex: 0 0 60px;
           width: 60px;
@@ -172,4 +200,10 @@
       transform: translateY(-50%);
     }
   }
+ .fade-enter-active, .fade-leave-active {
+   transition: opacity .5s;
+ }
+ .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+   opacity: 0;
+ }
 </style>

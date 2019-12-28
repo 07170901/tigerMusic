@@ -82,7 +82,7 @@
       //滚动指定位置后 触发事件
       scrollToElement(){
         this.scroll && this.scroll.scrollToElement.apply(this.scroll,arguments)
-      }
+      },
     },
     watch:{
       data(){

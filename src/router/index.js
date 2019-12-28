@@ -6,7 +6,11 @@ Vue.use(VueRouter)
 const routes = [{
     path: '/recommend',
     name: 'recommend',
-    component: () => import('../components/recommend/recommend.vue')
+    component: () => import('../components/recommend/recommend.vue'),
+    children:[{
+      path:':id',
+      component: () => import('../base/recommendList/recommendList.vue')
+    }]
   },
   {
     path: '/singer',
@@ -25,7 +29,11 @@ const routes = [{
   {
     path: '/rank',
     name: 'rank',
-    component: () => import('../components/rank/rank.vue')
+    component: () => import('../components/rank/rank.vue'),
+    children:[{
+      path:':id',
+      component: () => import('../base/recommendList/recommendList.vue')
+    }]
   },
 
   {

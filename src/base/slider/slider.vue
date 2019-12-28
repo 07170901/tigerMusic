@@ -7,7 +7,7 @@
     <!-- 小圆点 -->
     <div class="dots">
       <!-- 遍历小圆点 如果当前的currentPageIndex等于下标时触发 -->
-      <span class="dot" v-for='(item,index) in dots' :class="{active:currentPageIndex===index}" :key='index'></span>
+     <span class="dot" v-for='(item,index) in dots' :class="{active:currentPageIndex===index}" :key='index'></span>
     </div>
   </div>
 </template>
@@ -74,6 +74,7 @@
       _setSliderWidth(isResize) {
         // 获取slider的个数(轮播图的个数)
         this.children = this.$refs.sliderGroup.children
+        //console.log(this.children.length)
         // console.log(this.children.length)
         // 定义总长度
         let width = 0
@@ -89,17 +90,13 @@
           width += sliderWidth
         }
          //如果自动轮播的话就会添加额外两个图片的宽度（主要实现无缝轮播）
-        if (this.loop & !isResize) {
+        if (this.loop && !isResize) {
           width += 2 * sliderWidth
         }
         // 给sliderGroup添加宽度
         this.$refs.sliderGroup.style.width = width + 'px'
       },
-      // 获取小圆点的个数
-      _initDots() {
-        //获取slider的个数，自动生出
-        this.dots = new Array(this.children.length)
-      },
+
       // 可以控制左右滑动
       _initSlider() {
           // 插件better-scroll中的属性与方法
@@ -108,7 +105,7 @@
           scrollY: false,
           momentum: false,
           snap: {
-            loop: true,
+            loop: this.loop,
             threshold: 0.3,
             speed: 400,
           },
@@ -118,40 +115,40 @@
         this.slider.on('scrollEnd', () => {
           //获取每一张图片的下标
           let pageIndex = this.slider.getCurrentPage().pageX
-          // console.log(this.slider.getCurrentPage())
-          // if(this.loop){
-          //   pageIndex -= 1
-          // }
+         // console.log(pageIndex)
+
           this.currentPageIndex = pageIndex
           // console.log(pageIndex)
           if (this.autoPlay) {
-            clearTimeout(this.timer)
+             clearTimeout(this.timer)
             this._play()
           }
         })
+        this.slider.on('beforeScrollStart', () => {
+          if (this.autoPlay) {
+            clearTimeout(this.timer)
+          }
+        })
       },
+	  // 获取小圆点的个数
+	  _initDots() {
+	    //获取slider的个数，自动生出
+	    this.dots = new Array(this.children.length)
+	  },
       //设置自动播放的方法
       _play() {
-        let pageIndex = this.currentPageIndex + 1
-        if (this.loop) {
-          pageIndex += 1
-        }
-        //如果等于最后图的下标，则跳到0
-        if (pageIndex === this.children.length - 1) {
-          pageIndex = 0
-        }
+        let pageIndex = this.currentPageIndex+1
+        //console.log(pageIndex)
+
         // console.log(this.children.length)
         this.timer = setTimeout(() => {
           //better-scroll方法 pageIndex横向   0 纵向
           // console.log(pageIndex)
-          this.slider.goToPage(pageIndex, 0, 400)
+          //this.slider.goToPage(pageIndex, 0, 400)
+          this.slider.next()
         }, this.interval)
 
       }
-    },
-    //优化
-    destroyed() {
-      clearTimeout(this.timer)
     }
   }
 </script>

@@ -5,7 +5,7 @@
      <div class="back fl" @click="back">
        <img class="auto" src="../../assets/back.png" alt="">
       </div>
-        <div class="singerName one-wrap" v-html="singer.name"></div>
+        <div class="singerName one-wrap" v-html="singerName"></div>
     </div>
 
    <div class="songerImg" ref='bg'>
@@ -16,7 +16,7 @@
     <scroll :data="songs" @scroll='scroll' :listenScroll="listenScroll" class="listview" :probeType="probeType" ref='list'>
     <div class="musiclists">
       <ul>
-        <li v-for="(item,index) in songs" :key='index' >
+        <li v-for="(item,index) in songs" :key='index' @click="selectItem(item,index)" :data-id='item.id' >
           <div>
              <div class="songName one-wrap" v-if="item.name" v-html="item.name"></div>
            <div class="text one-wrap"  v-if="item.al" >收藏于专辑:《{{item.al.name}}》</div>
@@ -35,7 +35,11 @@
 <script>
   import scroll from '../scroll/scroll.vue'
   import loading from '../loading/loading.vue'
+  import {mapActions,mapGetters,} from 'vuex'
+  import axios from 'axios'
+  import {playlistMixin} from '../../common/js/mixin.js'
   export default {
+    mixins:[playlistMixin],
     name:'musicList',
     props:{
 
@@ -51,6 +55,7 @@
           type:Boolean,
           default:false
         },
+        singerName:null,
         scrollY:0
       }
     },
@@ -61,24 +66,60 @@
     this.minMaskHeight = -this.maskHeight+this.titleHeight
     this.$refs.list.$el.style.top = `${this.maskHeight}px`
     },
+    computed:{
+      ...mapGetters([
+        'playlist',
+      ])
+    },
     methods:{
+      handlePlaylist(playlist){
+        const bottom = playlist.length>0 ?'70px':''
+        this.$refs.list.$el.style.bottom = bottom
+        this.$refs.list.refresh()
+      },
       back(){
         this.$router.back()
       },
       scroll(pos){
         this.scrollY = pos.y
-      }
+      },
+      selectItem(item,index){
+        //console.log(this.playlist)
+       // console.log(item)
+        axios({
+          url:'http://www.arthurdon.top:3000/song/url?id='+item.id,
+          method:'GET'
+        })
+        .then((result)=>{
+          item.url = result.data.data[0].url
 
+         // console.log(result.data.data[0].url)
+         // console.log(item)
+        })
+        .catch((error) => {
+          //console.log('歌手详情获取错误(可能网络出错)')
+        })
+        // console.log(item,index)
+        // this.$emit('select',item,index)
+
+        this.selectPlay({
+          list:this.$store.state.hotsongs,
+          index:index
+        })
+      },
+      ...mapActions([
+        'selectPlay'
+      ])
     },
     created(){
        this.probeType = 3
        this.listenScroll = true
-       this.isFlag = true
       setTimeout(()=>{
        this.songs = this.$store.state.hotsongs
        this.singer = this.$store.state.singer
-        console.log(this.songs)
-        console.log(this.singer)
+       this.singerName =this.singer.name.length>9?this.singer.name.substr(0,9)+'...':this.singer.name
+        //console.log(this.songs)
+        //console.log(this.singer)
          this.isFlag = false
       },2500)
     },
@@ -125,83 +166,5 @@
 </script>
 
 <style lang="less" scoped>
-  @import '../../common/less/variable.less';
-  .music-list{
-    position: fixed;
-    z-index: 100;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: @color-background;
-     .title{
-      width: 100%;
-      position: absolute;
-      padding-top: 10px;
-      z-index: 101;
-    .back{
-      width: 24px;
-      height: 24px;
-      top: 10px;
-      left: 10px;
-      padding-left: 20px;
-    }
-     .singerName{
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%) ;
-      color: #fff;
-      font-size:@font-size-large-x;
-    }
-   }
-  .songerImg{
-      height: 240px;
-      overflow: hidden;
-      position: relative;
-  .mask{
-     position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      background: @color-background-d;
-     }
-   }
-  .musiclists{
-    ul{
-    padding: 20px 30px 0;
-    li{
-      margin-bottom: 30px;
-       .songName{
-         font-size: @font-size-small;
-         color: @color-text;
-         margin-bottom: 8px;
-    }
-    .text{
-       font-size: @font-size-small;
-       color:@color-text-l;
-    }
-    }
-   }
-  }
-  .loading-container{
-    position: absolute;
-    width: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  .listview{
-    width: 100%;
-    position: fixed;
-    top: 0;
-    bottom: 20px;
-}
-  .bg-layer{
-      position: relative;
-      height: 100%;
-      background: @color-background;
-    }
-  }
-
+  @import '../../common/less/musiclist.less';
 </style>

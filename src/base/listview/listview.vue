@@ -19,8 +19,8 @@
        </ul>
      </li>
    </ul>
-   <div class="list-shortcut" @touchstart='onShortcutTouchStart' @touchmove.stop.prevent='onShortcutTouchMove' @touchmove.stop>
-     <ul>
+   <div class="list-shortcut" @touchstart='onShortcutTouchStart' @touchmove.stop.prevent='onShortcutTouchMove' @touchmove.stop v-show="data[currentIndex]">
+     <ul >
        <li v-for="(item,index) in shortcutList"
         class="item"
         :key='index'
@@ -29,13 +29,14 @@
         >{{item}}</li>
        </ul>
    </div>
+   <div class="list-fixed" ref='fixedList' v-show="data[currentIndex]">
+     <h1 class="fixed-title">{{fixedTitle}}</h1>
+   </div>
    <!-- 加载中动画 -->
    <div class="loading-container" v-show="!data.length">
      <loading></loading>
    </div>
-   <div class="list-fixed" ref='fixedList'>
-     <h1 class="fixed-title">{{fixedTitle}}</h1>
-   </div>
+
  </scroll>
 </template>
 
@@ -60,7 +61,8 @@
         type:Array,
         // 不能直接使用default:[]
         default:()=>[]
-      }
+      },
+
     },
     computed:{
       // 获取title的首个字符作为侧边导航
@@ -125,14 +127,18 @@
         // console.log(detal)
         this._scrollTo(index)
        },
+       refresh(){
+         this.$refs.listview.refresh()
+       },
        //获取传过来的pos.y
        scroll(pos){
          this.scrollY = pos.y
        },
        // 点击进入歌手详情
        selectItem(item){
-         //console.log(item)
+        
          //向父组件发送一个自定义事件
+
           this.$emit('select',item)
        },
        _scrollTo(index){
@@ -241,7 +247,7 @@
       .list-group-item{
         display: flex;
         align-items: center;
-        padding: 20px 0 0 30px;
+        padding: 20px 0 0 24px;
         .picUrl{
           width: 50px;
           height: 50px;

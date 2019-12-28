@@ -1,8 +1,6 @@
 <template>
-   <transition name="fade">
      <music-list>
      </music-list>
-    </transition>
 </template>
 
 <script>
@@ -34,10 +32,10 @@
         .then((result)=>{
          this.$store.state.singer = result.data.artist
          this.$store.state.hotsongs = result.data.hotSongs
-          this.songs = result.data
+         this.songs = result.data
         })
         .catch((error) => {
-          console.log('歌手详情获取错误(可能网络出错)')
+          //console.log('歌手详情获取错误(可能网络出错)')
         })
       }
     },
@@ -48,10 +46,5 @@
 </script>
 
 <style lang="less" scoped>
- .fade-enter-active,.fade-leave-active {
-    transition: all .5s;
-  }
- .fade-enter,.fade-leave-to {
-   transform:  translate3D(100%,0,0);
-  }
+
 </style>

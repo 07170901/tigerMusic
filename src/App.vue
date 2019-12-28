@@ -6,15 +6,18 @@
   <keep-alive>
   <router-view></router-view>
   </keep-alive>
+  <player></player>
   </div>
 </template>
 <script>
     import MHearder from './components/m_header/m_hearder.vue'
     import Navtab from './components/navtab/navtab.vue'
+    import Player from './components/player/player.vue'
     export default {
       components:{
         MHearder,
-        Navtab
+        Navtab,
+        Player
       }
 
     }
@@ -49,5 +52,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+
+word-wrap:break-word
   }
 </style>

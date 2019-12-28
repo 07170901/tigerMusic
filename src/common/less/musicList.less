@@ -1,0 +1,79 @@
+   @import '../../common/less/variable.less';
+  .music-list{
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: @color-background;
+     .title{
+      width: 100%;
+      position: absolute;
+      padding-top: 10px;
+      z-index: 101;
+    .back{
+      width: 24px;
+      height: 24px;
+      top: 10px;
+      left: 10px;
+      padding-left: 20px;
+    }
+     .singerName{
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%) ;
+      color: #fff;
+      font-size:@font-size-large-x;
+    }
+   }
+  .songerImg{
+      height: 240px;
+      overflow: hidden;
+      position: relative;
+  .mask{
+     position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: @color-background-d;
+     }
+   }
+  .musiclists{
+    ul{
+    padding: 20px 30px 0;
+    li{
+      margin-bottom: 30px;
+       .songName{
+         font-size: @font-size-small;
+         color: @color-text;
+         margin-bottom: 8px;
+    }
+    .text{
+       font-size: @font-size-small;
+       color:@color-text-l;
+    }
+    }
+   }
+  }
+  .loading-container{
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .listview{
+    width: 100%;
+    position: fixed;
+    top: 0;
+    bottom: 20px;
+}
+  .bg-layer{
+      position: relative;
+      height: 100%;
+      background: @color-background;
+    }
+  }
+

@@ -1,11 +1,13 @@
 <template>
-  <div class="singer">
-
+  <div class="singer" ref='songs'>
     <listview
     :data='singeritem'
     @select='selectSinger'
+    ref='list'
     ></listview>
+    <transition name="fade">
     <router-view></router-view>
+     </transition>
   </div>
 
 </template>
@@ -13,14 +15,16 @@
 <script>
   import axios from 'axios'
   import Listview from '../../base/listview/listview.vue'
-
+  import {playlistMixin} from '../../common/js/mixin.js'
   export default {
+	  mixins:[playlistMixin],
     name: 'singer',
     data() {
       return {
         singeritem:[],
         asingeritem:[],
-        songs:[]
+        songs:[],
+        isFlag:false,
       }
     },
     created() {
@@ -37,10 +41,16 @@
                 //console.log('a==>',a.title)
                // console.log('b==>',b.title)
                return a.id - b.id
+               isFlag=true
              })
             }, 3000);
     },
     methods: {
+      handlePlaylist(singeritem){
+        const bottom = singeritem.length>0 ?'40px':''
+        this.$refs.songs.style.bottom = bottom
+        this.$refs.list.refresh()
+      },
       // 传递id
       selectSinger(singeritem){
         // console.log(this.$store.state.singerId)
@@ -55,7 +65,7 @@
         // },500)
 
       },
-      // 获取数据
+      // 获取歌手数据
           _getsingerlists(chatString,index) {
            let listsdate = {}
             axios({
@@ -69,7 +79,7 @@
               this.asingeritem.push(listsdate)
             })
             .catch((error) => {
-              console.log('歌手列表获取错误(可能网络出错)')
+              //console.log('歌手列表获取错误(可能网络出错)')
             })
 
         },
@@ -105,4 +115,10 @@
     bottom: 0;
     width: 100%;
   }
+  .fade-enter-active,.fade-leave-active {
+     transition: all .5s;
+   }
+  .fade-enter,.fade-leave-to {
+    transform:  translate3D(100%,0,0);
+   }
 </style>
