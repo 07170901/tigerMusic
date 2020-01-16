@@ -1,14 +1,47 @@
 <template>
   <div class="search-box">
-    <i class="icon-search"></i>
-    <input class="box">
-    <i class="icon-dismiss"></i>
+     <div class="searchIcon fl ">
+         <img class="auto" src="../../assets/search.png" alt="">
+       </div>
+      <input ref='query' class="box" v-model="query"  :placeholder="placeholder">
+    <div  @click="clear" v-show="query" class="searchIcon fr ">
+         <img class="auto" src="../../assets/close.png" alt="">
+       </div>
   </div>
 </template>
 
 <script>
+  import {debounce} from '../util/util.js'
   export default{
-    
+    props:{
+      placeholder:{
+        type:String,
+        default:'搜索歌曲或歌手'
+      }
+    },
+    data:()=>{
+      return{
+        query:''
+      }
+    },
+    methods:{
+      addsearch(query){
+        this.query = query
+      },
+      clear(){
+        this.query=''
+      },
+      blur(){
+        this.$refs.query.blur()
+      }
+      
+     },
+      created(){
+        // 节流处理
+        this.$watch('query',debounce((newWord)=>{
+           this.$emit('query',newWord)
+        },500))
+      }
   }
 </script>
 
@@ -23,9 +56,10 @@
     height: 40px;
     background: @color-highlight-background;
     border-radius: 6px;
-    .icon-search{
-      font-size: 24px;
-      color:@color-highlight-background; 
+
+    .searchIcon{
+      width: 14px;
+      padding: 8px 12px;
     }
     .box{
       flex:1;
@@ -34,13 +68,11 @@
       background: @color-highlight-background;
       color: @color-text;
       font-size: @font-size-medium;
+      border: none;
       &::placeholder{
         color: @color-text-d;
       }
-    .icon-dismiss{
-      font-size: 16px;
-      color: @color-background;
-    }
+
     }
   }
 </style>

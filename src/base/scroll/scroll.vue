@@ -26,6 +26,10 @@
        listenScroll:{
          type:Boolean,
          default:false
+       },
+       beforeScroll:{
+         type:Boolean,
+         default:false
        }
     },
     mounted(){
@@ -61,6 +65,9 @@
               //console.log(pos)
                self.$emit('scroll',pos)
            })
+         }
+         if(this.beforeScroll){
+           this.scroll.on('beforeScroll')
          }
       },
       // 启用 better-scroll (满足条件)

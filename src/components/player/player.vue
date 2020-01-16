@@ -10,15 +10,25 @@
       <div class="background" v-if="currentSong.al">
         <img :src="currentSong.al.picUrl" alt="" width="100%" height="100%" >
       </div>
+      <div class="background" v-else-if="currentSong.album">
+        <img :src="currentSong.album.artist.img1v1Url" alt="" width="100%" height="100%" >
+      </div>
       <!-- 背景图  end-->
 
       <!-- 头部 start -->
-      <div class="top" v-if="currentSong.ar">
+      <div class="top" >
         <div class="back" @click="back">
           <img src="../../assets/back.png" class=" icon-back auto" alt="">
         </div>
-        <h1 class="title" v-html="currentSong.name"></h1>
-        <h2 class="subtitle" v-html="currentSong.ar[0].name"></h2>
+        <div v-if="currentSong.ar">
+         <h1 class="title" v-html="currentSong.name"></h1>
+         <h2 class="subtitle" v-html="currentSong.ar[0].name"></h2>
+        </div>
+        <div v-else-if="currentSong.artists">
+           <h1 class="title" v-html="currentSong.name"></h1>
+           <h2 class="subtitle" v-html="currentSong.artists[0].name"></h2>
+        </div>
+
       </div>
       <!-- 头部 end -->
 
@@ -33,6 +43,9 @@
             <div class="cd" v-if="currentSong.al" :class="cdCls">
               <img :src="currentSong.al.picUrl" alt=""  class="image auto">
             </div>
+            <div class="cd" v-else-if="currentSong.album" :class="cdCls">
+              <img :src="currentSong.album.artist.img1v1Url" alt=""  class="image auto">
+            </div>
           </div>
           <div class="playing-lyric-wrapper">
             <div class="playing-lyric">{{playingLysic}}</div>
@@ -43,7 +56,6 @@
 
             <div class="lyric-wrapper">
               <div v-if="currentLyric">
-
                 <p ref='lyricLine'
                 class="text"
                 :class="{'current':currentNum===index}"
@@ -99,11 +111,17 @@
         <div class="icon" v-if="currentSong.al">
           <img  :class="cdCls" width="40" height="40" :src="currentSong.al.picUrl">
         </div>
+        <div class="icon" v-else-if="currentSong.album">
+          <img  :class="cdCls" width="40" height="40" :src="currentSong.album.artist.img1v1Url">
+        </div>
         <div class="text" v-if="currentSong.ar">
           <h2 class="name no-wrap" v-html="currentSong.name"></h2>
           <p class="desc no-wrap" v-html="currentSong.ar[0].name"></p>
         </div>
-
+        <div class="text" v-else-if="currentSong.artists">
+           <h1  class="name no-wrap" v-html="currentSong.name"></h1>
+           <p  class="desc no-wrap" v-html="currentSong.artists[0].name"></p>
+        </div>
         <div class="control">
           <progress-cricle :radius="radius" :percent='percent'>
          <img @click.stop="togglePlaying" :src="playIcon" alt="" class="auto icon-mini">
@@ -163,7 +181,7 @@
     },
     created(){
       this.touch = {}
-     
+
     },
     computed: {
       cdCls(){
@@ -175,8 +193,14 @@
       disableCls(){
         return this.songReady?'':'disable'
       },
+
      percent(){
-       return this.currentTime/(this.currentSong.dt/1000)
+       if(this.currentSong.dt==undefined){
+         return this.currentTime/(this.currentSong.duration/1000)
+       }else{
+         return this.currentTime/(this.currentSong.dt/1000)
+       }
+
      },
      // 改变播放模式的图片
      iconMode(){
@@ -227,15 +251,6 @@
         animations.unregisterAnimation('move')
         this.$refs.cdWrapper.style.animation = ''
       },
-      // leave(el,done){
-      //     this.$refs.cdWrapper.style.transition = 'all 0.4s'
-      //     const {x,y,scale} = this._getPosAndScale()
-      //     this.$refs.cdWrapper.style.transform=`translate3d(${x}px,${y}px,0) scale(${scale})`
-      // },
-      // afterLeave(){
-      //   this.$refs.cdWrapper.style.transition=' '
-
-      // },
       togglePlaying(){
         if(!this.songReady){
           return
@@ -305,15 +320,29 @@
         return `${minute}:${second}`
       },
       onProgressBarChange(percent){
-        const currentTime = this.currentSong.dt*percent
-        this.$refs.audio.currentTime = this.currentSong.dt/1000 * percent
+        if(this.currentSong.dt==undefined){
+            const currentTime = this.currentSong.duration*percent
+            this.$refs.audio.currentTime = this.currentSong.duration/1000 * percent
+            if(!this.playing){
+              this.togglePlaying()
+            }
+            //重新跳回开始位置
+            if(this.currentLyric){
+              this.currentLyric.seek(currentTime)
+            }
+
+        }else{
+           const currentTime = this.currentSong.dt*percent
+           this.$refs.audio.currentTime = this.currentSong.dt/1000 * percent
         if(!this.playing){
           this.togglePlaying()
         }
-        // 重新跳回开始位置
+        //重新跳回开始位置
         if(this.currentLyric){
           this.currentLyric.seek(currentTime)
         }
+        }
+
       },
       changeMode(){
         const mode = (this.mode+1)%3

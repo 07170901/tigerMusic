@@ -1,4 +1,5 @@
 import {playMode} from '../common/js/config.js'
+import {loadSearch} from '../common/js/cache.js'
 export const state = {
   //歌手及歌手热门歌曲
    singer:{},
@@ -18,7 +19,8 @@ export const state = {
    fullScreen: false,
    playlist:[],
    sequenceList:[],
-   
+   searchHistory:loadSearch(),
+
    // 播放模式
    mode:playMode.sequence,
    // 控制前后切歌

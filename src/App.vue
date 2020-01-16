@@ -52,8 +52,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
-
-word-wrap:break-word
+    word-wrap:break-word
   }
 </style>

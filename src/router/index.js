@@ -24,7 +24,11 @@ const routes = [{
   {
     path: '/search',
     name: 'search',
-    component: () => import('../components/search/search.vue')
+    component: () => import('../components/search/search.vue'),
+    children:[{
+      path:':id',
+      component: () => import('../base/recommendList/recommendList.vue')
+    }]
   },
   {
     path: '/rank',

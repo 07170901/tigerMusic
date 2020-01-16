@@ -81,7 +81,7 @@
         list:this.songs,
         index:index
       })
-     // console.log(item)
+      //console.log(this.songs)
      //音乐
 
     },
